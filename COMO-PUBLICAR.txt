@@ -1,0 +1,83 @@
+COMO PUBLICAR O AFS BANCADA INTELIGENTE NA NETLIFY
+Roteiro completo — a publicação é feita pelo navegador, passo a passo.
+Quem executa só precisa das contas logadas do dono do app.
+
+O QUE JÁ ESTÁ PRONTO (não precisa mexer)
+- Site compilado na pasta client/dist (com o arquivo _redirects dentro).
+- Funções da API na pasta netlify/functions (diagnóstico, gestão,
+  fotos, vídeos e logomarca).
+- netlify.toml na raiz: publish = client/dist, functions =
+  netlify/functions, redirect /actions para a função da API.
+- O banco (Turso) cria as tabelas sozinho no primeiro uso.
+- A análise da IA roda na função em segundo plano
+  analyze-background (limite de 15 min da Netlify), sem erro de
+  tempo limite; a tela acompanha pela ação getAiJob.
+
+CONTAS NECESSÁRIAS (login do dono do app)
+1. Netlify (app.netlify.com) — hospeda site e funções.
+2. GitHub (github.com) — guarda o projeto para a Netlify importar.
+3. Turso (turso.tech) — banco de dados gratuito.
+4. Meta (dev.meta.ai) — chave da API de modelos (a IA).
+
+PASSO 1 — CRIAR O BANCO NO TURSO
+1. Entrar em turso.tech e fazer login.
+2. Criar um banco novo (ex.: afs-bancada).
+3. Na página do banco, copiar a Database URL (começa com libsql://).
+4. Clicar em Create Token e copiar o token.
+Guarde os dois: viram TURSO_DATABASE_URL e TURSO_AUTH_TOKEN.
+
+PASSO 2 — CRIAR A CHAVE DA IA NA META
+1. Entrar em dev.meta.ai e fazer login.
+2. Criar uma API key da API de modelos.
+3. Na página de início rápido (quickstart), copiar a URL base da
+   API e o nome do modelo de chat com visão indicados lá.
+Guarde os três: viram AI_API_KEY, AI_API_BASE_URL e AI_MODEL.
+Não invente URL nem modelo: use exatamente os do painel.
+
+PASSO 3 — SUBIR O PROJETO NO GITHUB (pelo navegador)
+1. Em github.com, criar um repositório PRIVADO (ex.: afs-bancada).
+2. Na página do repositório vazio, clicar em
+   "uploading an existing file".
+3. Arrastar TODOS os arquivos e pastas do projeto descompactado
+   (client/, netlify/, netlify.toml, .env.example, package.json)
+   e confirmar o commit. O GitHub aceita pastas no arrastar.
+4. Conferir se netlify/functions aparece no repositório.
+
+PASSO 4 — IMPORTAR NA NETLIFY
+1. Em app.netlify.com: Add new site → Import an existing project.
+2. Conectar o GitHub e escolher o repositório do passo 3.
+3. Não mudar nada: o netlify.toml já traz publish e functions.
+4. Clicar em Deploy site e aguardar o primeiro deploy.
+
+PASSO 5 — CADASTRAR AS 5 VARIÁVEIS
+Na Netlify: Site settings → Environment variables → Add a variable.
+TURSO_DATABASE_URL = URL do banco (passo 1)
+TURSO_AUTH_TOKEN   = token do banco (passo 1)
+AI_API_KEY         = chave da Meta (passo 2)
+AI_API_BASE_URL    = URL base da Meta (passo 2)
+AI_MODEL           = modelo da Meta (passo 2)
+Depois: Deploys → Trigger deploy → Deploy site (obrigatório para
+as funções lerem as variáveis).
+
+PASSO 6 — TESTAR NA URL DA NETLIFY
+1. Abrir a URL do site no celular.
+2. Diagnóstico: enviar uma placa com foto e aguardar a análise
+   (a tela mostra a IA analisando; pode levar até ~1 minuto).
+3. Gestão: cadastrar um cliente e abrir uma OS; fechar e reabrir
+   a página para conferir se salvou (banco funcionando).
+4. Gestão → Empresa: preencher o cadastro e subir a logomarca.
+
+PROBLEMAS COMUNS
+- "Banco de dados não configurado": falta variável do Turso ou
+  o deploy não foi refeito depois de cadastrá-la.
+- "IA não configurada": idem para as 3 variáveis da Meta.
+- Site abre mas nada salva: a pasta netlify/functions não subiu
+  (deploy por arrastar a pasta — Netlify Drop — NÃO serve).
+- Erro 401/403 da IA: chave inválida ou modelo sem acesso.
+
+LIMITES DESTA VERSÃO
+- Sem login: quem tiver a URL usa o app e gasta a cota da IA.
+  Não divulgue a URL publicamente.
+- Os dados do app no Muse não migram sozinhos: o app da
+  Netlify começa vazio.
+- Vídeos curtos (até ~4 MB): a análise usa os quadros do vídeo.

@@ -1,0 +1,20 @@
+AFS BANCADA INTELIGENTE — PACOTE PARA PUBLICAR NA NETLIFY (DEPLOY COMPLETO)
+
+Você NÃO precisa publicar na mão: a Muse faz a publicação pelo
+navegador. A sua parte é só entrar com login e senha quando a tela
+pedir (Netlify, GitHub, Turso e Meta). É só dizer no chat:
+"pode publicar".
+
+O roteiro completo da publicação está em COMO-PUBLICAR.txt, neste
+pacote. Resumo do que tem aqui dentro:
+
+- client/dist .......... site já compilado (com _redirects dentro)
+- netlify/functions .... a API do app, a IA em segundo plano e as fotos
+- netlify.toml ......... configuração da Netlify (site + funções)
+- .env.example ......... modelo das 5 variáveis de ambiente
+- COMO-PUBLICAR.txt .... roteiro passo a passo da publicação
+- DEPLOY-NETLIFY.md .... resumo técnico e problemas comuns
+
+ATENÇÃO: arrastar a pasta em app.netlify.com/drop NÃO publica esta
+versão — as funções não sobem por arraste. A publicação é pelo GitHub
+(upload pelo navegador) ou pela Netlify CLI, como está no roteiro.
